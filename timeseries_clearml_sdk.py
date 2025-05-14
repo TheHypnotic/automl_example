@@ -214,7 +214,7 @@ def main():
     # Logger.current_logger().report_image("Prediction", "Example Forecast", iteration=0, image=img)
 
     # Logger.current_logger().report_image("Prediction", "Example Forecast", iteration=0, image=plot_path)
-
+    task.close()
     print("✅ Task Completed")
 
 if __name__ == "__main__":
