@@ -8,6 +8,8 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import abc
 import os
+from PIL import Image
+
 
 from clearml import Task, Dataset, Logger, OutputModel
 
@@ -208,7 +210,10 @@ def main():
     plt.grid(True)
     plot_path = "prediction_plot.png"
     plt.savefig(plot_path)
-    Logger.current_logger().report_image("Prediction", "Example Forecast", iteration=0, image=plot_path)
+    img = Image.open(plot_path)
+    Logger.current_logger().report_image("Prediction", "Example Forecast", iteration=0, image=img)
+
+    # Logger.current_logger().report_image("Prediction", "Example Forecast", iteration=0, image=plot_path)
 
     print("✅ Task Completed")
 
