@@ -1,4 +1,3 @@
-
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, TensorDataset
@@ -17,8 +16,8 @@ from clearml.automation import UniformParameterRange, DiscreteParameterRange, Hy
 
 
 # Initialize ClearML Task
-task = Task.init(project_name='TimeSeries SDK',
-                 task_name='Train LSTM TimeSeries Model params3',
+task = Task.init(project_name='TimeSeries test',
+                 task_name='timeseries',
                  task_type=Task.TaskTypes.training)
 
 # ----- load dataset from ClearML -----
@@ -190,9 +189,38 @@ class AbstractTrainer(abc.ABC):
             train_loss = self.train_one_epoch(epoch)
             val_loss = self.validate()
             print(f'LOSS train {train_loss:.4f} valid {val_loss:.4f}')
+
             self.writer.add_scalars("Loss", {"Train": train_loss, "Validation": val_loss}, epoch + 1)
             self.clearml_logger.report_scalar("Loss", "Train", value=train_loss, iteration=epoch)
             self.clearml_logger.report_scalar("Loss", "Validation", value=val_loss, iteration=epoch)
+            
+            self.model.eval()
+            preds, targets = [], []
+            with torch.no_grad():
+                for x_batch, y_batch in self.val_loader:
+                    x_batch = x_batch.to(self.device)
+                    y_batch = y_batch.to(self.device)
+                    y_pred = self.model(x_batch)
+                    preds.append(y_pred.cpu().numpy())
+                    targets.append(y_batch.cpu().numpy())
+
+            preds = np.concatenate(preds).flatten()
+            targets = np.concatenate(targets).flatten()
+            preds_rescaled = self.scaler.inverse_transform(preds.reshape(-1, 1)).flatten()
+            targets_rescaled = self.scaler.inverse_transform(targets.reshape(-1, 1)).flatten()
+
+            mse = mean_squared_error(targets_rescaled, preds_rescaled)
+            rmse = np.sqrt(mse)
+            mae = mean_absolute_error(targets_rescaled, preds_rescaled)
+            r2 = r2_score(targets_rescaled, preds_rescaled)
+
+            self.writer.add_scalar("Metrics/RMSE", rmse, epoch + 1)
+            self.writer.add_scalar("Metrics/MAE", mae, epoch + 1)
+            self.writer.add_scalar("Metrics/R2", r2, epoch + 1)
+
+            self.clearml_logger.report_scalar("Metrics", "RMSE", value=rmse, iteration=epoch)
+            self.clearml_logger.report_scalar("Metrics", "MAE", value=mae, iteration=epoch)
+            self.clearml_logger.report_scalar("Metrics", "R2", value=r2, iteration=epoch)
 
             if val_loss < self.best_val_loss:
                 self.best_val_loss = val_loss
@@ -239,7 +267,7 @@ logger = Logger.current_logger()
 
 params = {
     # "dataset_name": "airline_passengers_dataset",
-    "dataset_name": "monthly_sunspots_dataset",
+    "dataset_name": "oil_price",
     "dataset_project": "demo",
     "sequence_length": 12,
     "prediction_length": 1,
@@ -283,6 +311,76 @@ trainer = TimeSeriesTrainer(
     log_dir="runs/timeseries",
     checkpoint_path="checkpoints/lstm_timeseries.pt"
 )
+trainer.scaler = scaler
+
+
+# ------ log and plot
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from PIL import Image
+
+
+def evaluate_and_log_results(model, val_loader, scaler, logger, writer, device='cuda' if torch.cuda.is_available() else 'cpu'):
+    model.eval()
+    preds = []
+    targets = []
+    with torch.no_grad():
+        for x_batch, y_batch in val_loader:
+            x_batch = x_batch.to(device)
+            y_batch = y_batch.to(device)
+            y_pred = model(x_batch)
+            preds.append(y_pred.cpu().numpy())
+            targets.append(y_batch.cpu().numpy())
+
+    preds = np.concatenate(preds).flatten()
+    targets = np.concatenate(targets).flatten()
+
+    # Reverse MinMax scaling
+    preds_rescaled = scaler.inverse_transform(preds.reshape(-1, 1)).flatten()
+    targets_rescaled = scaler.inverse_transform(targets.reshape(-1, 1)).flatten()
+
+    # Metrics
+    mse = mean_squared_error(targets_rescaled, preds_rescaled)
+    rmse = np.sqrt(mse)
+    mae = mean_absolute_error(targets_rescaled, preds_rescaled)
+    r2 = r2_score(targets_rescaled, preds_rescaled)
+
+    print(f"\nEvaluation Metrics:\nRMSE: {rmse:.4f}, MAE: {mae:.4f}, R²: {r2:.4f}")
+
+    # Log metrics
+    # logger.report_scalar("Metrics", "RMSE", value=rmse, iteration=0)
+    # logger.report_scalar("Metrics", "MAE", value=mae, iteration=0)
+    # logger.report_scalar("Metrics", "R2", value=r2, iteration=0)
+    # writer.add_scalar("Metrics/RMSE", rmse)
+    # writer.add_scalar("Metrics/MAE", mae)
+    # writer.add_scalar("Metrics/R2", r2)
+
+    # Plot predictions vs actuals
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(targets_rescaled, label="Actual")
+    ax.plot(preds_rescaled, label="Predicted")
+    ax.set_title("Predicted vs Actual")
+    ax.legend()
+    fig_path = "plots/pred_vs_actual.png"
+    os.makedirs(os.path.dirname(fig_path), exist_ok=True)
+    plt.savefig(fig_path)
+    # logger.report_image("Predictions", "Pred vs Actual", iteration=0, image=fig_path) 
+    logger.report_image("Predictions", "Pred vs Actual", iteration=0, image=Image.open(fig_path))
+
+    plt.close(fig)
+
+    # Plot residuals
+    residuals = targets_rescaled - preds_rescaled
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.hist(residuals, bins=50)
+    ax.set_title("Residuals Histogram")
+    fig_path = "plots/residuals.png"
+    plt.savefig(fig_path)
+    # logger.report_image("Predictions", "Residuals", iteration=0, image=fig_path)
+    logger.report_image("Predictions", "Residuals", iteration=0, image=Image.open(fig_path))
+
+    plt.close(fig)
+
 
 if __name__ == "__main__":
     trainer.run()
@@ -290,3 +388,6 @@ if __name__ == "__main__":
     # Log the trained model to ClearML
     output_model = OutputModel(task=task, framework='pytorch')
     output_model.update_weights(trainer.checkpoint_path)
+
+    # Evaluate and log predictions, residuals, metrics
+    evaluate_and_log_results(trainer.model, val_loader, scaler, logger, trainer.writer, trainer.device)
