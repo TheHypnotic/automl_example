@@ -1,11 +1,12 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+
 from ml_trainer import AutoTrainer
 from ml_trainer.base import AbstractModelArchitecture
 
 # Simple CNN model
-class SimpleCNN(nn.Module):
+class SimpleCNN(nn.Module, AbstractModelArchitecture):
     
     def __init__(self, num_classes=10):
         super(SimpleCNN, self).__init__()
@@ -38,9 +39,8 @@ class SimpleCNN(nn.Module):
         self.load_state_dict(state_dict)
 
 
-
-
 cfg = {
+    # Training Params
     "task": "image_classification",
     "batch_size": 64,
     "split_ratio": 0.8,
@@ -48,7 +48,7 @@ cfg = {
     "epochs": 5,
     "num_classes": 10,  # override if needed after loading
 
-
+    # Dataset
     "dataset_config": {
         "source": "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz",  # or "./data/my_dataset"
         "transform_config": {
@@ -57,6 +57,11 @@ cfg = {
             "normalize_std": [0.5, 0.5, 0.5]
         }
     },
+    
+    # Model 
+    "save_model": True,
+    "model_dir": "/home/darius/save-models/cnn",
+
     "model_config": {
         "type": "timm",
         "name": "resnet50",

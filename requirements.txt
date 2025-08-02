@@ -71,3 +71,4 @@ patool
 reformer-pytorch
 sktime
 PyWavelets
+aipmodel
