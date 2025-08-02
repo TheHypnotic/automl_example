@@ -95,7 +95,7 @@ trainer.run()
 
 local_model_id = manager.add_model(
     source_type="local",
-    source_path="/home/darius/save-models/cnn",
+    source_path=".",
     model_name="CNNModel",
     # code_path="/home/darius/save-models/model.py" , # ← Replace with the path to your model.py if you have it
 )
