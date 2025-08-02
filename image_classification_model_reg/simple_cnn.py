@@ -4,6 +4,9 @@ from torch.nn import functional as F
 
 from ml_trainer import AutoTrainer
 from ml_trainer.base import AbstractModelArchitecture
+from aipmodel.model_registry import MLOpsManager
+from dotenv import load_dotenv
+
 
 # Simple CNN model
 class SimpleCNN(nn.Module, AbstractModelArchitecture):
@@ -38,6 +41,17 @@ class SimpleCNN(nn.Module, AbstractModelArchitecture):
         state_dict = torch.load(path, map_location=map_location)
         self.load_state_dict(state_dict)
 
+manager = MLOpsManager(
+    endpoint_url="http://213.233.184.112:30008",
+    clearml_access_key="XX91AXADN64X35M2Y34JHBCXAJ3YWV",
+    clearml_secret_key="qoNUyVfSgvijmQBSCDLiQ8l282uSOhEcYvxT_vYf4t52qdJzAtzjoTnM_yJXOUwtlnA",
+    clearml_username="dario"
+)
+
+# manager.get_model(
+#     model_name="ImageModel",  # or any valid model ID
+#     local_dest="./downloaded_model"
+# )
 
 cfg = {
     # Training Params
@@ -60,7 +74,8 @@ cfg = {
     
     # Model 
     "save_model": True,
-    "model_dir": "/home/darius/save-models/cnn",
+    # "model_dir": "/home/darius/save-models/cnn",
+    "model_dir": ".",
 
     "model_config": {
         "type": "timm",
@@ -69,6 +84,18 @@ cfg = {
     }
 }
 
+# manager.get_model(
+#     model_name="CNNModel",  # or any valid model ID
+#     local_dest="./downloaded_model"
+# )
+
 model = SimpleCNN()
 trainer = AutoTrainer(config=cfg, model=model)
 trainer.run()
+
+local_model_id = manager.add_model(
+    source_type="local",
+    source_path="/home/darius/save-models/cnn",
+    model_name="CNNModel",
+    # code_path="/home/darius/save-models/model.py" , # ← Replace with the path to your model.py if you have it
+)
