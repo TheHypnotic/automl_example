@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+from dotenv import load_dotenv
 
 from ml_trainer import AutoTrainer
 from ml_trainer.base import AbstractModelArchitecture
 from aipmodel.model_registry import MLOpsManager
-from dotenv import load_dotenv
 
+load_dotenv()
 
 # Simple CNN model
 class SimpleCNN(nn.Module, AbstractModelArchitecture):
