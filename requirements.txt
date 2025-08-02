@@ -72,3 +72,4 @@ reformer-pytorch
 sktime
 PyWavelets
 aipmodel
+python-dotenv
