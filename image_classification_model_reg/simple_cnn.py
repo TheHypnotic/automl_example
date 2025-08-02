@@ -99,4 +99,5 @@ local_model_id = manager.add_model(
     source_path=".",
     model_name="CNNModel",
     # code_path="/home/darius/save-models/model.py" , # ← Replace with the path to your model.py if you have it
+    code_path="." , # ← Replace with the path to your model.py if you have it
 )
