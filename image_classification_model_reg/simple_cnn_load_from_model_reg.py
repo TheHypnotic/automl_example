@@ -71,7 +71,7 @@ cfg = {
     
     # Model 
     "load_model": True,  
-    "model_dir": ".df1769ae6cd246dea97ee669fc24a13c/",
+    "model_dir": ".models/df1769ae6cd246dea97ee669fc24a13c",
 
     "model_config": {
         "type": "timm",
@@ -82,7 +82,7 @@ cfg = {
 
 manager.get_model(
     model_name="CNNModel",  # or any valid model ID
-    local_dest=".models/df1769ae6cd246dea97ee669fc24a13c"
+    local_dest="."
 )
 
 model = SimpleCNN()
