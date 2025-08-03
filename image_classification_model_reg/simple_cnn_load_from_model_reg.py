@@ -70,8 +70,7 @@ cfg = {
     },
     
     # Model 
-    "save_model": True,
-    # "model_dir": "/home/darius/save-models/cnn",
+    "load_model": True,   # ✅ Enable loading
     "model_dir": ".",
 
     "model_config": {
