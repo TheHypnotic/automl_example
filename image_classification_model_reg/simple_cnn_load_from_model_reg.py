@@ -82,7 +82,7 @@ cfg = {
 
 manager.get_model(
     model_name="CNNModel",  # or any valid model ID
-    local_dest="."
+    local_dest=".models/df1769ae6cd246dea97ee669fc24a13c"
 )
 
 model = SimpleCNN()
