@@ -71,7 +71,7 @@ cfg = {
     
     # Model 
     "load_model": True,  
-    "model_dir": ".models/df1769ae6cd246dea97ee669fc24a13c",
+    "model_dir": "models/df1769ae6cd246dea97ee669fc24a13c",
 
     "model_config": {
         "type": "timm",
