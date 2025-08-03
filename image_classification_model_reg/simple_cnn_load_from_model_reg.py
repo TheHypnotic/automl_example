@@ -85,6 +85,28 @@ manager.get_model(
     local_dest="."
 )
 
+import os
+
+# Get the current working directory
+current_path = os.getcwd()
+print(f"Current Working Directory: {current_path}")
+
+# List all files and directories in the current working directory
+print("\nFiles and directories in the current directory:")
+for item in os.listdir(current_path):
+    if os.path.isdir(item):
+        print(f"Directory: {item}")
+    elif os.path.isfile(item):
+        print(f"File: {item}")
+
+# Check if a specific directory exists (e.g., "models")
+specific_dir = 'models'
+if os.path.isdir(specific_dir):
+    print(f"\nThe directory '{specific_dir}' exists.")
+else:
+    print(f"\nThe directory '{specific_dir}' does not exist.")
+
+
 model = SimpleCNN()
 trainer = AutoTrainer(config=cfg, model=model)
 trainer.run()
