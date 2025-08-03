@@ -70,8 +70,8 @@ cfg = {
     },
     
     # Model 
-    "load_model": True,   # ✅ Enable loading
-    "model_dir": ".",
+    "load_model": True,  
+    "model_dir": ".df1769ae6cd246dea97ee669fc24a13c/",
 
     "model_config": {
         "type": "timm",
