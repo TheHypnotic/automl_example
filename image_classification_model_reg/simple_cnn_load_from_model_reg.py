@@ -49,6 +49,8 @@ manager = MLOpsManager(
     clearml_username="dario"
 )
 
+model_name = "CNNModel"
+model_id = manager.get_model_id_by_name(model_name)
 
 cfg = {
     # Training Params
@@ -71,7 +73,7 @@ cfg = {
     
     # Model 
     "load_model": True,  
-    "model_dir": "./df1769ae6cd246dea97ee669fc24a13c/",
+    "model_dir": f"./{model_id}/",
 
     "model_config": {
         "type": "timm",
@@ -81,7 +83,7 @@ cfg = {
 }
 
 manager.get_model(
-    model_name="CNNModel",  # or any valid model ID
+    model_name= model_name,  # or any valid model ID
     local_dest="."
 )
 
