@@ -64,7 +64,8 @@ typing_extensions==4.14.0
 tzdata==2025.2
 urllib3==2.4.0
 Werkzeug==3.1.3
-git+https://github.com/AIP-MLOPS/trainer.git
+# git+https://github.com/AIP-MLOPS/trainer.git
+ml-trainer-sdk==0.1.1
 timm
 albumentations
 patool
