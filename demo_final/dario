@@ -21,7 +21,7 @@ manager = MLOpsManager(
 
 
 # ---------- Variables -------------
-dataset='from user'
+dataset='airline-passengers'
 epochs = 10
 batch_size = 16
 save_model = False
@@ -29,15 +29,17 @@ load_model = False
 model_name = "Autoformer"
 model_id = "Autoformer"
 
-if model_name or model_id not ["Autoformer", "TimesNet"]:
-    raise ValueError("not value model name/id: choose from Autoformer or TimesNet")
+# Ensure valid model name/id
+if model_name not in ["Autoformer", "TimesNet"] and model_id not in ["Autoformer", "TimesNet"]:
+    raise ValueError("Invalid model name/id: choose from Autoformer or TimesNet")
 
-if dataset=='airline-passengers':
+# Dataset configuration
+if dataset == 'airline-passengers':
     sources = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv"
-elif dataset=="oil-spill"
+elif dataset == "oil-spill":
     sources = "https://raw.githubusercontent.com/jbrownlee/Datasets/refs/heads/master/oil-spill.csv"
-else: 
-    raise valueError("not valid dataset: choose either airline-passengers or oil-spill")
+else:
+    raise ValueError("Invalid dataset: choose either 'airline-passengers' or 'oil-spill'")
 
 # --------------     to load model -----------------
 if load_model: 
