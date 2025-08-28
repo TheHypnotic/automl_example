@@ -65,7 +65,7 @@ tzdata==2025.2
 urllib3==2.4.0
 Werkzeug==3.1.3
 # git+https://github.com/AIP-MLOPS/trainer.git
-ml-trainer-sdk==0.1.1
+ml-trainer-sdk==0.1.3
 timm
 albumentations
 patool
