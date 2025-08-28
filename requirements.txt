@@ -72,6 +72,6 @@ patool
 reformer-pytorch
 sktime
 PyWavelets
-aipmodel
+aipmodel==0.2.28
 python-dotenv
 boto3
