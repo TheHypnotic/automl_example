@@ -44,7 +44,7 @@ class SimpleCNN(nn.Module, AbstractModelArchitecture):
         self.load_state_dict(state_dict)
 
 manager = MLOpsManager(
-    clearml_endpoint_url="http://213.233.184.112:30008",
+    clearml_endpoint_url="http://172.15.30.43:30008",
     clearml_access_key="9E280YOU7E94HR84OMDPW71JBP2XPZ",
     clearml_secret_key="uRzPKO078_7TGFJRzImk0Zj1AwefwHgpiV11IWr8joS5M6AzKhwTTKI_HEHhxylXPoA",
     clearml_username="mlops-admin"
