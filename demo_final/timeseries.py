@@ -27,6 +27,7 @@ batch_size = 16
 save_model = False
 load_model = False
 model_name = "Autoformer"
+model_save_name = "Autoformer_save1"
 model_id = "Autoformer"
 
 # Ensure valid model name/id
@@ -91,7 +92,6 @@ if save_model:
     local_model_id = manager.add_model(
         source_type="local",
         source_path="model/",
-        model_name="TimesNet",
-        # model_name="Autoformer",
-        code_path="." , # ← Replace with the path to your model.py if you have it
+        model_name=model_save_name,
+        code_path="." , 
     )
